@@ -24,8 +24,8 @@ const Footer = () => {
           <div>
           <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
           <ul className='flex flex-col gap-1 text-gray-600'>
-            <li>+91 9392733902</li>
-            <li>srinu.boddupallyind@gmail.com</li>
+            <li>+1 (202) 555-0147</li>
+            <li>admin@forever.com</li>
             <li>
               <a
                 href="https://www.instagram.com/__srinu__01__/"
