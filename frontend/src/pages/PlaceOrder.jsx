@@ -33,24 +33,24 @@ const PlaceOrder = () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: order.currency,
-      name:'Order Payment',
-      description:'Order Payment',
+      name: 'Order Payment',
+      description: 'Order Payment',
       order_id: order.id,
       receipt: order.receipt,
       handler: async (response) => {
-      console.log(response)
-      try{
+        console.log(response)
+        try {
 
-        const {data } = await  axios.post(backendUrl + '/api/order/verifyRazorpay', response,{headers:{token}})
-        if(data.success) {
-          navigate('/orders')
-          setCartItems({})
-        } 
-      } catch (error) {
-        console.log(error)
-        toast.error(error)
+          const { data } = await axios.post(backendUrl + '/api/order/verifyRazorpay', response, { headers: { token } })
+          if (data.success) {
+            navigate('/orders')
+            setCartItems({})
+          }
+        } catch (error) {
+          console.log(error)
+          toast.error(error)
+        }
       }
-      }    
     }
     const rzp = new window.Razorpay(options)
     rzp.open()
@@ -88,38 +88,38 @@ const PlaceOrder = () => {
       switch (method) {
 
         //API Calls for COD 
-         case 'cod':
-          const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers:{token}})
+        case 'cod':
+          const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers: { token } })
           // console.log(response.data.success);
-          
-          if(response.data.success){
+
+          if (response.data.success) {
             setCartItems({})
             navigate('/orders')
-          } else{
+          } else {
             toast.error(response.data.message)
           }
           break;
 
         case 'stripe':
-            const responseStripe = await axios.post(backendUrl + '/api/order/stripe',orderData,{headers:{token}})
-            if(responseStripe.data.success){
-              const {session_url} = responseStripe.data
-              window.location.replace(session_url)
-            }else{
-              toast.error(responseStripe.data.message)
-            }
-             break;
+          const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, { headers: { token } })
+          if (responseStripe.data.success) {
+            const { session_url } = responseStripe.data
+            window.location.replace(session_url)
+          } else {
+            toast.error(responseStripe.data.message)
+          }
+          break;
         case 'razorpay':
-        
-        const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay',orderData, {headers:{token}})
-        if(responseRazorpay.data.success){
-          // console.log(responseRazorpay.data.order);
-            intiPay(responseRazorpay.data.order);
-        }
-         break;
 
-         default:
-           break;
+          const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
+          if (responseRazorpay.data.success) {
+            // console.log(responseRazorpay.data.order);
+            intiPay(responseRazorpay.data.order);
+          }
+          break;
+
+        default:
+          break;
 
       }
 
@@ -138,20 +138,147 @@ const PlaceOrder = () => {
           <Title text1={'DELIVERY'} text2={'INFORMATION'} />
         </div>
         <div className='flex gap-3'>
-          <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='First name' />
-          <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Last name' />
+          <input
+            required
+            onChange={onChangeHandler}
+            name="firstName"
+            value={formData.firstName}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="First Name"
+            pattern="[A-Za-z]{2,}"
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid first name")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
+
+          <input
+            required
+            onChange={onChangeHandler}
+            name="lastName"
+            value={formData.lastName}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="Last Name"
+            pattern="[A-Za-z]{1,}"
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid last name")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
         </div>
-        <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="email" placeholder='Email address' />
-        <input required onChange={onChangeHandler} name='street' value={formData.street} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Street' />
+        {/* <input required onChange={onChangeHandler} name='email' value={formData.email} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="email" placeholder='Email address' /> */}
+        <div className="w-full">
+          <input
+            required
+            onChange={onChangeHandler}
+            name="email"
+            value={formData.email}
+            type="email"
+            placeholder="Enter your Gmail address"
+            pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+            className="border border-gray-300 rounded py-2 px-4 w-full outline-none focus:border-black"
+          />
+
+          {formData.email &&
+            !/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(formData.email) && (
+              <p className="text-red-500 text-sm mt-1">
+                Please enter a valid Gmail address
+              </p>
+            )}
+        </div>
+        <input
+          required
+          onChange={onChangeHandler}
+          name="street"
+          value={formData.street}
+          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          type="text"
+          placeholder="Street"
+          minLength={5}
+          onInvalid={(e) =>
+            e.target.setCustomValidity("Please enter a valid street address")
+          }
+          onInput={(e) => e.target.setCustomValidity("")}
+        />
         <div className='flex gap-3'>
-          <input required onChange={onChangeHandler} name='city' value={formData.city} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='City' />
-          <input required onChange={onChangeHandler} name='state' value={formData.state} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='State' />
+          <input
+            required
+            onChange={onChangeHandler}
+            name="city"
+            value={formData.city}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="City"
+            pattern="[A-Za-z ]{2,}"
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid city name")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
+
+          <input
+            required
+            onChange={onChangeHandler}
+            name="state"
+            value={formData.state}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="State"
+            pattern="[A-Za-z ]{2,}"
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid state name")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
         </div>
         <div className='flex gap-3'>
-          <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Zip Code' />
-          <input required onChange={onChangeHandler} name='country' value={formData.country} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Country' />
+          <input
+            required
+            onChange={onChangeHandler}
+            name="zipcode"
+            value={formData.zipcode}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="Zip Code"
+            pattern="[0-9]{6}"
+            maxLength={6}
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid 6-digit ZIP code")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
+          <input
+            required
+            onChange={onChangeHandler}
+            name="country"
+            value={formData.country}
+            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            type="text"
+            placeholder="Country"
+            pattern="[A-Za-z ]{2,}"
+            onInvalid={(e) =>
+              e.target.setCustomValidity("Please enter a valid country name")
+            }
+            onInput={(e) => e.target.setCustomValidity("")}
+          />
         </div>
-        <input required onChange={onChangeHandler} name='phone' value={formData.phone} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Phone' />
+        <input
+          required
+          onChange={onChangeHandler}
+          name="phone"
+          value={formData.phone}
+          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          type="tel"
+          placeholder="Phone Number"
+          pattern="[0-9]{10}"
+          maxLength={10}
+          onInvalid={(e) =>
+            e.target.setCustomValidity("Please enter a valid 10-digit phone number")
+          }
+          onInput={(e) => e.target.setCustomValidity("")}
+        />
       </div>
 
       {/* ---- Right Side ------- */}
