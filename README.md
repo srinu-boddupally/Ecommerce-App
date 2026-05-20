@@ -231,18 +231,4 @@ Create a Pull Request
 
 ---
 
-# 👨‍💻 Author
 
-**Srinu Boddupally**
-
-GitHub:  
-https://github.com/srinu-boddupally
-
----
-
-# 📌 Project Status
-
-✅ Completed  
-✅ Fully Functional  
-✅ Ready for Deployment  
-✅ Portfolio Project
